@@ -1,0 +1,56 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+
+
+
+enum Role {
+  USER
+  ADMIN
+}
+
+
+model User {
+id        String   @id @default(uuid())
+  title      String?
+
+    email     String?  @unique
+  image     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  role      Role     @default(USER)
+  categories LinkonUser[]
+}
+
+model Link {
+id        String   @id @default(uuid())
+    title       String
+  description String
+  url         String
+  imageUrl    String
+  category    String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  posts LinkonUser[]
+}
+
+model LinkonUser {
+  post       User     @relation(fields: [postId], references: [id])
+  postId     String // relation scalar field (used in the `@relation` attribute above)
+  category   Link @relation(fields: [categoryId], references: [id])
+  categoryId String // relation scalar field (used in the `@relation` attribute above)
+  assignedAt DateTime @default(now())
+  assignedBy String
+
+  @@id([postId, categoryId])
+}
